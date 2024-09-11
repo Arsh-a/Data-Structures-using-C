@@ -1,0 +1,114 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+struct node{
+    char data;
+    struct node* next;
+};
+
+struct node* top = NULL;
+void FlushBuffer()
+{
+    char c;
+    while((c=getchar())!='\0' && c!=EOF);
+
+}
+
+void RemoveNextLine(char* expression)
+{
+    size_t len= strlen(expression);
+    if(len>0 && expression[len-1]=='\n')
+    {
+        expression[len-1]='\0';
+    }
+}
+
+int isEmpty()
+{
+    return (top==NULL) ?  1: 0;
+}
+
+int isFull()
+{
+    struct node* new = (struct node*) malloc (sizeof(struct node));
+    return (new==NULL)? 1: 0;
+}
+void push(char data)
+{
+    if(isFull())
+    {
+        printf("Stack Overflow");
+    }
+    
+    else{
+        struct node* n = (struct node*) malloc (sizeof(struct node));
+        n->next=top;
+        n->data=data;
+        top=n;
+    }
+}
+
+char pop()
+{
+    if(isEmpty())
+    {
+        printf("Stack Underflow");
+    }
+    
+    else{
+        struct node* q = top;
+        char ch=top->data;
+        top=top->next;
+        free(q);
+        return ch;
+    }
+}
+int checkExpression(char* expression)
+{
+    for(int i=0;i<strlen(expression);i++)
+    {
+        if(expression[i]=='(' || expression[i]=='[' || expression[i]=='{')
+        {
+            push(expression[i]);
+        }
+        
+        else if(expression[i]==')' || expression[i]==']' || expression[i]=='}')
+        {
+            char popped_char = pop();
+             if((popped_char== '{' && expression[i]!='}') || (popped_char=='[' && expression[i]!= ']') ||(popped_char =='(' && expression[i]!=')'))
+        {
+            return 0;
+        }
+       
+        }
+       
+    }
+    return 1;
+}
+
+
+int main()
+{
+    char expression[100];
+    printf("Enter the expression : ");
+    fgets(expression, sizeof(expression),stdin);
+    RemoveNextLine(expression);
+    //int res = checkExpression(expression);
+    
+    if(checkExpression(expression))
+    {
+        if(isEmpty())
+        {
+            printf("Expression is balanced\n");
+        }
+        
+        else{
+            printf("Expression is unbalanced\n");
+        }
+    }
+    
+    else{
+        printf("Expression is unbalanced\n ");
+    }
+}
